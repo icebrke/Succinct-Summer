@@ -23,8 +23,9 @@
       padding: 10px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       box-shadow: inset -2px -2px 0 #fff, inset 2px 2px 0 #a0527c;
+      gap: 8px;
     }
     header img.logo {
       height: 48px;
@@ -33,8 +34,10 @@
       font-size: 24px;
       margin: 0;
       text-shadow: 1px 1px #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    
     .content {
       padding: 20px;
     }
@@ -96,8 +99,7 @@
 <body>
   <header>
     <img src="pixel-logo.png" class="logo" alt="Succinct Logo" />
-    <h1>Succinct Summer Feed</h1>
-    
+    <h1><span>🌴</span> Succinct Summer Feed</h1>
   </header>
 
   <div class="content">
@@ -107,8 +109,14 @@
     </div>
 
     <div class="player">
-      <h3>Now Playing:</h3>
-      <iframe width="100%" height="166" src="https://www.youtube.com/embed/YOUTUBE_STREAM_ID?autoplay=1&loop=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <iframe
+        width="100%"
+        height="166"
+        src="https://www.youtube.com/embed/n4OflWszcZ0?list=RDn4OflWszcZ0&start_radio=1&autoplay=1&loop=1&modestbranding=1&controls=1&rel=0"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+      ></iframe>
     </div>
   </div>
 
@@ -122,11 +130,18 @@
       container.innerHTML = "Loading...";
 
       try {
-        const res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://api.twitter.com/2/tweets/search/recent?query=Succinct%20Summer&max_results=5&expansions=attachments.media_keys,author_id&media.fields=url,type,preview_image_url&user.fields=username,profile_image_url,created_at"), {
-          headers: {
-            "Authorization": "Bearer YOUR_TWITTER_BEARER_TOKEN"
+        const res = await fetch(
+          "https://api.allorigins.win/raw?url=" +
+            encodeURIComponent(
+              "https://api.twitter.com/2/tweets/search/recent?query=Succinct%20Summer&max_results=5&expansions=attachments.media_keys,author_id&media.fields=url,type,preview_image_url&user.fields=username,profile_image_url,created_at"
+            ),
+          {
+            headers: {
+              Authorization:
+                "Bearer AAAAAAAAAAAAAAAAAAAAACeX2wEAAAAAWwjmRxGrN6Tx1R7lgudBbcqqNiQ%3D7wZhFaDCLRpsH9jF4QVWvg5LpA76C0fdFegzgy418rF4jzRHot",
+            },
           }
-        });
+        );
 
         const data = await res.json();
 
@@ -136,19 +151,29 @@
         }
 
         container.innerHTML = "";
-        data.data.forEach(tweet => {
+        data.data.forEach((tweet) => {
           const el = document.createElement("div");
           el.className = "tweet";
 
-          const user = data.includes.users.find(u => u.id === tweet.author_id);
+          const user = data.includes.users.find((u) => u.id === tweet.author_id);
           let mediaHtml = "";
 
-          if (tweet.attachments && tweet.attachments.media_keys && data.includes && data.includes.media) {
-            const mediaItems = tweet.attachments.media_keys.map(key => data.includes.media.find(m => m.media_key === key));
-            mediaItems.forEach(media => {
+          if (
+            tweet.attachments &&
+            tweet.attachments.media_keys &&
+            data.includes &&
+            data.includes.media
+          ) {
+            const mediaItems = tweet.attachments.media_keys.map((key) =>
+              data.includes.media.find((m) => m.media_key === key)
+            );
+            mediaItems.forEach((media) => {
               if (media && media.type === "photo") {
                 mediaHtml += `<br><img src="${media.url}" alt="Tweet image" style="max-width:100%; border:1px solid #ccc; margin-top:4px;">`;
-              } else if (media && (media.type === "video" || media.type === "animated_gif")) {
+              } else if (
+                media &&
+                (media.type === "video" || media.type === "animated_gif")
+              ) {
                 const preview = media.preview_image_url || media.url;
                 mediaHtml += `<br><img src="${preview}" alt="Media preview" style="max-width:100%; border:1px solid #ccc; margin-top:4px;">`;
               }
